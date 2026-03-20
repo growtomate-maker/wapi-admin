@@ -6,9 +6,8 @@ WORKDIR /app
 # 2. Dependencies
 FROM base AS deps
 COPY package*.json ./
-# Ensure the PostCSS modules are present
-RUN npm install @tailwindcss/postcss postcss tailwindcss
-RUN npm install 
+# Use --include=dev to ensure @tailwindcss/postcss (in devDependencies) is installed
+RUN npm install --include=dev
 
 # 3. Builder
 FROM base AS builder
@@ -17,8 +16,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# FIX: Explicitly disable Turbopack using the --no-turbo flag
-# This forces Next.js to use the stable Webpack compiler.
+# We use --no-turbo to be safe, as Next.js 16 + Tailwind 4 can be buggy in Turbopack
 RUN npx next build --no-turbo
 
 # 4. Runner
