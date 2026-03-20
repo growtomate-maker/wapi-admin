@@ -1,27 +1,27 @@
 # Base image
 FROM node:22-alpine AS base
 
-# Install dependencies only when needed
+# Install dependencies
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+# Changed npm ci to npm install
+RUN npm install 
 
-# Rebuild the source code only when needed
+# Rebuild the source code
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
 
-# Production image, copy all the files and run next
+# Production image
 FROM base AS runner
 WORKDIR /app
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -33,6 +33,6 @@ COPY --from=builder /app/package.json ./package.json
 
 USER nextjs
 EXPOSE 3000
-ENV PORT 3000
+ENV PORT=3000
 
 CMD ["npm", "start"]
