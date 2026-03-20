@@ -4,9 +4,10 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: false,
   env: {
-    NEXT_PUBLIC_API_URL: "https://your-backend-domain.com/api",
-    NEXT_PUBLIC_API_BASE_URL: "/api",
-    NEXT_PUBLIC_STORAGE_URL: "https://your-backend-domain.com/",
+    // UPDATED: Pointing to your actual backend
+    NEXT_PUBLIC_API_URL: "https://api.qwiktalks.com/api",
+    NEXT_PUBLIC_API_BASE_URL: "https://api.qwiktalks.com/api",
+    NEXT_PUBLIC_STORAGE_URL: "https://api.qwiktalks.com/",
   },
   redirects: async () => {
     return [
@@ -26,6 +27,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "ui-avatars.com",
+      },
+      // ADDED: Allowing your API to serve images
+      {
+        protocol: "https",
+        hostname: "api.qwiktalks.com",
       },
     ],
   },
