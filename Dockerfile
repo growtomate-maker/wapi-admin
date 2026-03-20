@@ -6,7 +6,7 @@ WORKDIR /app
 # 2. Dependencies
 FROM base AS deps
 COPY package*.json ./
-# Explicitly installing the missing peer dependencies
+# Ensure the PostCSS modules are present
 RUN npm install @tailwindcss/postcss postcss tailwindcss
 RUN npm install 
 
@@ -16,9 +16,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-# FIX: We use 'next build' directly instead of 'npm run build' 
-# to ensure it doesn't force Turbopack if your script has the --turbo flag.
-RUN npx next build
+
+# FIX: Explicitly disable Turbopack using the --no-turbo flag
+# This forces Next.js to use the stable Webpack compiler.
+RUN npx next build --no-turbo
 
 # 4. Runner
 FROM base AS runner
